@@ -177,6 +177,7 @@ $(".table").on("click", ".updateSch", function (event) {
   var name = $(this)[0].parentNode.parentNode.cells[0].innerHTML
   var destination = $(this)[0].parentNode.parentNode.cells[1].innerHTML
   var frequency = $(this)[0].parentNode.parentNode.cells[2].innerHTML
+  $("#"+trainNum).prop("disabled", true)
   console.log('train num -----' + trainNum)
   updateTrainSchedule(name, destination, frequency, trainNum)
 
