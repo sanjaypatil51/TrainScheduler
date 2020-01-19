@@ -86,10 +86,15 @@ database.ref("/train").on("child_added", function (snapshot) {
   var nextTrain = moment().add(tMinutesTillTrain, "minutes");
   console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
 
-  $(".table").last().append(`<tr class=nr><td>${snapshot.val().trainName}</td><td>${snapshot.val().destination}</td><td>${snapshot.val().frequency}</td><td>${nextTrain}</td><td>${tMinutesTillTrain}</td>
-    <td><button class="btn btn-primary deleteSch">Delete</button></td><td id=trainId style=display:none>${snapshot.val().trainId}</td></tr>`);
+  $(".table").last().append(`<tr class=nr><td contenteditable='true'>${snapshot.val().trainName}</td>
+    <td contenteditable='true'>${snapshot.val().destination}</td>
+    <td>${snapshot.val().frequency}</td><td>${nextTrain}</td>
+    <td>${tMinutesTillTrain}</td>
+    <td><button class="btn btn-primary updateSch">Update</button></td>
+    <td><button class="btn btn-primary deleteSch">Delete</button></td>
+    <td id=trainId style=display:none>${snapshot.val().trainId}</td></tr>`);
   trainNumber = snapshot.val().trainId
-  console.log("train number: " + trainNumber)
+  console.log("current train number: " + trainNumber)
   // Handle the errors
 }, function (errorObject) {
   console.log("Errors handled: " + errorObject.code);
@@ -100,8 +105,8 @@ $(".table").on("click", ".deleteSch", function (event) {
   //getting all rows exmple
   //row=$(".table .deleteSch")
   //console.log("?????"+row[0].parentNode.parentNode.cells[0].innerHTML)
-  var trainNum = $(this)[0].parentNode.parentNode.cells[6].innerHTML
-  removeRTrainSchedule(trainNum)
+  var trainNum = $(this)[0].parentNode.parentNode.cells[7].innerHTML
+  removeTrainSchedule(trainNum)
   $(this)[0].parentNode.parentNode.remove()
 
   //anotehr wau to select row and columns for that row
@@ -117,7 +122,21 @@ $(".table").on("click", ".deleteSch", function (event) {
 
 })
 
-function removeRTrainSchedule(id) {
+//update schedule
+$(".table").on("click", ".updateSch", function (event) {
+  //getting all rows exmple
+  //row=$(".table .deleteSch")
+  //console.log("?????"+row[0].parentNode.parentNode.cells[0].innerHTML)
+  var trainNum = $(this)[0].parentNode.parentNode.cells[7].innerHTML
+  var name = $(this)[0].parentNode.parentNode.cells[0].innerHTML
+  var destination = $(this)[0].parentNode.parentNode.cells[1].innerHTML
+  var frequency = $(this)[0].parentNode.parentNode.cells[2].innerHTML
+  console.log('train num -----'+trainNum)
+  updateTrainSchedule(name, destination, frequency, trainNum)
+
+})
+
+function removeTrainSchedule(id) {
   console.log("TrainId" + id)
   var queryRef = database.ref("/train").orderByChild("trainId").equalTo(parseInt(id));
 
@@ -131,5 +150,34 @@ function removeRTrainSchedule(id) {
       database.ref("/train").child(childKey).remove();
     })
   })
+
+}
+
+
+//update train schedule
+
+function updateTrainSchedule(name, destination, frequency, trainNum) {
+  var queryRef = database.ref("/train").orderByChild("trainId").equalTo(parseInt(trainNum));
+
+
+  queryRef.once('value', function (snapshot) {
+    console.log(snapshot.val())
+    snapshot.forEach(function (childSnapshot) {
+      var childKey = childSnapshot.key;
+      var childData = childSnapshot.val().readingId;
+      console.log(childKey + " " + childData)
+      database.ref("/train").child(childKey).update({
+
+        trainName: name,
+        destination: destination,
+        frequency: frequency,
+        dateaUpdated: firebase.database.ServerValue.TIMESTAMP
+
+      })
+
+
+    })
+  })
+
 
 }
