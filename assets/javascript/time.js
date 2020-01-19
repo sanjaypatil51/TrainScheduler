@@ -86,11 +86,11 @@ database.ref("/train").on("child_added", function (snapshot) {
   var nextTrain = moment().add(tMinutesTillTrain, "minutes");
   console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
 
-  $(".table").last().append(`<tr class=nr><td contenteditable='true'>${snapshot.val().trainName}</td>
-    <td contenteditable='true'>${snapshot.val().destination}</td>
+  $(".table").last().append(`<tr class=nr><td class=editable contenteditable='true'>${snapshot.val().trainName}</td>
+    <td class=editable contenteditable='true'>${snapshot.val().destination}</td>
     <td>${snapshot.val().frequency}</td><td>${nextTrain}</td>
     <td>${tMinutesTillTrain}</td>
-    <td><button class="btn btn-primary updateSch">Update</button></td>
+    <td><button disabled id=${snapshot.val().trainId} class="btn btn-primary updateSch">Update</button></td>
     <td><button class="btn btn-primary deleteSch">Delete</button></td>
     <td id=trainId style=display:none>${snapshot.val().trainId}</td></tr>`);
   trainNumber = snapshot.val().trainId
@@ -100,41 +100,6 @@ database.ref("/train").on("child_added", function (snapshot) {
   console.log("Errors handled: " + errorObject.code);
 });
 
-//delete schedule after button press
-$(".table").on("click", ".deleteSch", function (event) {
-  //getting all rows exmple
-  //row=$(".table .deleteSch")
-  //console.log("?????"+row[0].parentNode.parentNode.cells[0].innerHTML)
-  var trainNum = $(this)[0].parentNode.parentNode.cells[7].innerHTML
-  removeTrainSchedule(trainNum)
-  $(this)[0].parentNode.parentNode.remove()
-
-  //anotehr wau to select row and columns for that row
-  //var row = $(this).closest("tr"),        // Finds the closest row <tr> 
-  //tds = row.find("td"); // find all tds for tr
-  //console.log(row)
-
-  // $.each($(tds), function () {               // Visits every single <td> element
-  //console.log("----" + $(this).text());        // Prints out the text within the <td>
-  //});
-
-  //update databse and remove train
-
-})
-
-//update schedule
-$(".table").on("click", ".updateSch", function (event) {
-  //getting all rows exmple
-  //row=$(".table .deleteSch")
-  //console.log("?????"+row[0].parentNode.parentNode.cells[0].innerHTML)
-  var trainNum = $(this)[0].parentNode.parentNode.cells[7].innerHTML
-  var name = $(this)[0].parentNode.parentNode.cells[0].innerHTML
-  var destination = $(this)[0].parentNode.parentNode.cells[1].innerHTML
-  var frequency = $(this)[0].parentNode.parentNode.cells[2].innerHTML
-  console.log('train num -----'+trainNum)
-  updateTrainSchedule(name, destination, frequency, trainNum)
-
-})
 
 function removeTrainSchedule(id) {
   console.log("TrainId" + id)
@@ -178,6 +143,54 @@ function updateTrainSchedule(name, destination, frequency, trainNum) {
 
     })
   })
-
-
 }
+
+
+//delete schedule after button press
+$(".table").on("click", ".deleteSch", function (event) {
+  //getting all rows exmple
+  //row=$(".table .deleteSch")
+  //console.log("?????"+row[0].parentNode.parentNode.cells[0].innerHTML)
+  var trainNum = $(this)[0].parentNode.parentNode.cells[7].innerHTML
+  removeTrainSchedule(trainNum)
+  $(this)[0].parentNode.parentNode.remove()
+
+  //anotehr wau to select row and columns for that row
+  //var row = $(this).closest("tr"),        // Finds the closest row <tr> 
+  //tds = row.find("td"); // find all tds for tr
+  //console.log(row)
+
+  // $.each($(tds), function () {               // Visits every single <td> element
+  //console.log("----" + $(this).text());        // Prints out the text within the <td>
+  //});
+
+  //update databse and remove train
+
+})
+
+//update schedule
+$(".table").on("click", ".updateSch", function (event) {
+  //getting all rows exmple
+  //row=$(".table .deleteSch")
+  //console.log("?????"+row[0].parentNode.parentNode.cells[0].innerHTML)
+  var trainNum = $(this)[0].parentNode.parentNode.cells[7].innerHTML
+  var name = $(this)[0].parentNode.parentNode.cells[0].innerHTML
+  var destination = $(this)[0].parentNode.parentNode.cells[1].innerHTML
+  var frequency = $(this)[0].parentNode.parentNode.cells[2].innerHTML
+  console.log('train num -----' + trainNum)
+  updateTrainSchedule(name, destination, frequency, trainNum)
+
+})
+
+//enable update button on updating row cell, use dynamic id associated with button
+$(".table").on("click", ".editable", function (event) {
+  console.log("in editable event")
+  var row = $(this)[0].parentNode.cells[7].innerHTML
+  $("#"+row).prop("disabled", false)
+
+
+  //console.log($(this)[0].parentNode.cells[5].innerHTML)
+
+
+})
+
