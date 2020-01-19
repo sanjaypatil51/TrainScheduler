@@ -54,11 +54,36 @@ $("#add-user").on("click", function (event) {
     console.log(snapshot.val().frequency);
     // Change the HTML to reflect
 
-    //var startDate=moment(snapshot.val().startDate)
-    //var months=moment().diff(startDate,"months")
-    //var totalBilled=(snapshot.val().rate)*months
+var tFrequency = snapshot.val().frequency
 
-    $(".table").last().append(`<tr><td>${snapshot.val().trainName}</td><td>${snapshot.val().destination}</td><td>${snapshot.val().frequency}</td><td></td><td></td></tr>`);
+// 
+var firstTime = snapshot.val().firstTrainTime
+
+// First Time (pushed back 1 year to make sure it comes before current time)
+var firstTimeConverted = moment(firstTime, "HH:mm").subtract(1, "years");
+console.log("firstconverted "+firstTimeConverted);
+
+// Current Time
+var currentTime = moment();
+console.log("CURRENT TIME: " + moment(currentTime).format("hh:mm"));
+
+// Difference between the times
+var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
+console.log("DIFFERENCE IN TIME: " + diffTime);
+
+// Time apart (remainder)
+var tRemainder = diffTime % tFrequency;
+console.log(tRemainder);
+
+// Minute Until Train
+var tMinutesTillTrain = tFrequency - tRemainder;
+console.log("MINUTES TILL TRAIN: " + tMinutesTillTrain);
+
+// Next Train
+var nextTrain = moment().add(tMinutesTillTrain, "minutes");
+console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
+
+    $(".table").last().append(`<tr><td>${snapshot.val().trainName}</td><td>${snapshot.val().destination}</td><td>${snapshot.val().frequency}</td><td>${nextTrain}</td><td>${tMinutesTillTrain}</td></tr>`);
 
     // Handle the errors
   }, function(errorObject) {
