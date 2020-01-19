@@ -18,7 +18,7 @@ firebase.initializeApp(config);
 var database = firebase.database();
 
 //capture event
-$("#add-user").on("click", function (event) {
+$("#add-train").on("click", function (event) {
   // Don't refresh the page!
   event.preventDefault();
 
@@ -32,20 +32,21 @@ $("#add-user").on("click", function (event) {
   $("#role-input").val("")
   $("#date-input").val("")
   $("#rate-input").val("")
+  if (name != "") {
+    database.ref("/train").push({
+      trainName: name,
+      destination: destination,
+      firstTrainTime: startTime,
+      frequency: frequency,
+      trainId: trainNumber,
+      dateadded: firebase.database.ServerValue.TIMESTAMP
+    });
 
-  database.ref("/train").push({
-    trainName: name,
-    destination: destination,
-    firstTrainTime: startTime,
-    frequency: frequency,
-    trainId: trainNumber,
-    dateadded: firebase.database.ServerValue.TIMESTAMP
-  });
-
-  //$(".table").last().append(`<tr><td>${name}</td><td>${role}</td><td>${startDate}</td><td></td><td>${rate}</td></tr>`);
-
+    //$(".table").last().append(`<tr><td>${name}</td><td>${role}</td><td>${startDate}</td><td></td><td>${rate}</td></tr>`);
+  }
 
 })
+
 
 // Firebase watcher + initial loader HINT: .on("value")
 database.ref("/train").on("child_added", function (snapshot) {
@@ -110,7 +111,7 @@ function removeTrainSchedule(id) {
     console.log(snapshot.val())
     snapshot.forEach(function (childSnapshot) {
       var childKey = childSnapshot.key;
-      var childData = childSnapshot.val().readingId;
+      var childData = childSnapshot.val().trainId;
       console.log(childKey + " " + childData)
       database.ref("/train").child(childKey).remove();
     })
@@ -129,7 +130,7 @@ function updateTrainSchedule(name, destination, frequency, trainNum) {
     console.log(snapshot.val())
     snapshot.forEach(function (childSnapshot) {
       var childKey = childSnapshot.key;
-      var childData = childSnapshot.val().readingId;
+      var childData = childSnapshot.val().trainId;
       console.log(childKey + " " + childData)
       database.ref("/train").child(childKey).update({
 
@@ -148,6 +149,7 @@ function updateTrainSchedule(name, destination, frequency, trainNum) {
 
 //delete schedule after button press
 $(".table").on("click", ".deleteSch", function (event) {
+  event.preventDefault();
   //getting all rows exmple
   //row=$(".table .deleteSch")
   //console.log("?????"+row[0].parentNode.parentNode.cells[0].innerHTML)
@@ -170,6 +172,7 @@ $(".table").on("click", ".deleteSch", function (event) {
 
 //update schedule
 $(".table").on("click", ".updateSch", function (event) {
+  event.preventDefault();
   //getting all rows exmple
   //row=$(".table .deleteSch")
   //console.log("?????"+row[0].parentNode.parentNode.cells[0].innerHTML)
@@ -177,7 +180,7 @@ $(".table").on("click", ".updateSch", function (event) {
   var name = $(this)[0].parentNode.parentNode.cells[0].innerHTML
   var destination = $(this)[0].parentNode.parentNode.cells[1].innerHTML
   var frequency = $(this)[0].parentNode.parentNode.cells[2].innerHTML
-  $("#"+trainNum).prop("disabled", true)
+  $("#" + trainNum).prop("disabled", true)
   console.log('train num -----' + trainNum)
   updateTrainSchedule(name, destination, frequency, trainNum)
 
@@ -185,9 +188,10 @@ $(".table").on("click", ".updateSch", function (event) {
 
 //enable update button on updating row cell, use dynamic id associated with button
 $(".table").on("click", ".editable", function (event) {
+  event.preventDefault();
   console.log("in editable event")
   var row = $(this)[0].parentNode.cells[7].innerHTML
-  $("#"+row).prop("disabled", false)
+  $("#" + row).prop("disabled", false)
 
 
   //console.log($(this)[0].parentNode.cells[5].innerHTML)
