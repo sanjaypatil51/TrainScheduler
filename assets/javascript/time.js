@@ -89,11 +89,15 @@ database.ref("/train").on("child_added", function (snapshot) {
 
   $(".table").last().append(`<tr class=nr><td class=editable contenteditable='true'>${snapshot.val().trainName}</td>
     <td class=editable contenteditable='true'>${snapshot.val().destination}</td>
-    <td>${snapshot.val().frequency}</td><td>${nextTrain}</td>
-    <td>${tMinutesTillTrain}</td>
+    <td id=frequency${snapshot.val().trainId}>${snapshot.val().frequency}</td>
+    <td id=nextTrain${snapshot.val().trainId}>${nextTrain}</td>
+    <td id=minuteToTrain${snapshot.val().trainId}>${tMinutesTillTrain}</td>
     <td><button disabled id=${snapshot.val().trainId} class="btn btn-primary updateSch">Update</button></td>
     <td><button class="btn btn-primary deleteSch">Delete</button></td>
-    <td id=trainId style=display:none>${snapshot.val().trainId}</td></tr>`);
+    <td id=trainId style=display:none>${snapshot.val().trainId}</td>
+    <td id=firstTrain${snapshot.val().trainId} style=display:none>${snapshot.val().firstTrainTime}</td>
+    </tr>
+    `);
   trainNumber = snapshot.val().trainId
   console.log("current train number: " + trainNumber)
   // Handle the errors
@@ -198,4 +202,55 @@ $(".table").on("click", ".editable", function (event) {
 
 
 })
+
+//set next arrival and minute to next train every minute using interval
+var intervalId = setInterval(function () {
+  var tableRow = $(".table .nr")
+  console.log(tableRow)
+
+  for (i = 0; i < tableRow.length; i++) {
+
+    var trainNum = tableRow[i].cells[7].innerHTML
+    console.log(trainNum)
+    var tFrequency=$("#frequency"+trainNum).text()
+    console.log("--"+tFrequency)
+    // 
+    var firstTime = $("#firstTrain"+trainNum).text()
+    console.log("--"+firstTime)
+    // First Time (pushed back 1 year to make sure it comes before current time)
+    var firstTimeConverted = moment(firstTime, "HH:mm").subtract(1, "years");
+    console.log("firstconverted " + firstTimeConverted);
+
+    // Current Time
+    var currentTime = moment();
+    console.log("CURRENT TIME: " + moment(currentTime).format("hh:mm"));
+
+    // Difference between the times
+    var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
+    console.log("DIFFERENCE IN TIME: " + diffTime);
+
+    // Time apart (remainder)
+    var tRemainder = diffTime % tFrequency;
+    console.log(tRemainder);
+
+    // Minute Until Train
+    var tMinutesTillTrain = tFrequency - tRemainder;
+    console.log("MINUTES TILL TRAIN: " + tMinutesTillTrain);
+
+    // Next Train
+    var nextTrain = moment().add(tMinutesTillTrain, "minutes");
+
+    $("#nextTrain"+trainNum).text(nextTrain)
+    $("#minuteToTrain"+trainNum).text(tMinutesTillTrain)
+
+  }
+
+}, 1000 * 60)
+
+
+
+
+
+
+
 
