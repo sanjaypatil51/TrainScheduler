@@ -47,22 +47,22 @@
                 <div class="card-body">
 
                     <!-- Sign-up Form (note the various input "types")-->
-                    <form role="form">
+                    <form role="form" id="train-form">
                         <div class="form-group">
                             <label for="name-input">Train Name:</label>
-                            <input class="form-control" id="name-input" type="text">
+                            <input class="form-control" id="name-input" type="text" required />
                         </div>
                         <div class="form-group">
                             <label for="role-input">Destination:</label>
-                            <input class="form-control" id="role-input" type="text">
+                            <input class="form-control" id="role-input" type="text" required>
                         </div>
                         <div class="form-group">
                             <label for="date-input">First Train Time (HH:MM- military:</label>
-                            <input class="form-control" id="date-input" type="time">
+                            <input class="form-control" id="date-input" type="time" required>
                         </div>
                         <div class="form-group">
                             <label for="rate-input">Frequency (min):</label>
-                            <input class="form-control" id="rate-input" type="number">
+                            <input class="form-control" id="rate-input" type="number" required>
                         </div>
                         <button class="btn btn-default" id="add-train" type="submit">Submit</button>
                     </form>

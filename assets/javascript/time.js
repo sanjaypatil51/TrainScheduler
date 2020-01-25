@@ -18,15 +18,18 @@ firebase.initializeApp(config);
 var database = firebase.database();
 
 //capture event
-$("#add-train").on("click", function (event) {
+$("#add-train").on("click",function (event) {
   // Don't refresh the page!
-  event.preventDefault();
 
+  
+  event.preventDefault(); 
   var name = $("#name-input").val().trim();
   var destination = $("#role-input").val().trim();
-  var startTime = $("#date-input").val().trim();
+  var startTime = $("#date-input").val();
   var frequency = $("#rate-input").val().trim();
   trainNumber++
+
+  console.log(trainNumber+","+name+destination+startTime+frequency)
 
   $("#name-input").val("")
   $("#role-input").val("")
