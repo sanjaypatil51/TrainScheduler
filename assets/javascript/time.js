@@ -92,7 +92,7 @@ database.ref("/train").on("child_added", function (snapshot) {
 
   $(".table").last().append(`<tr class=nr><td class=editable contenteditable='true'>${snapshot.val().trainName}</td>
     <td class=editable contenteditable='true'>${snapshot.val().destination}</td>
-    <td id=frequency${snapshot.val().trainId}>${snapshot.val().frequency}</td>
+    <td class=editable contenteditable='true' id=frequency${snapshot.val().trainId}>${snapshot.val().frequency}</td>
     <td id=nextTrain${snapshot.val().trainId}>${nextTrain}</td>
     <td id=minuteToTrain${snapshot.val().trainId}>${tMinutesTillTrain}</td>
     <td><button disabled id=${snapshot.val().trainId} class="btn btn-primary updateSch">Update</button></td>
