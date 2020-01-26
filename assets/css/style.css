@@ -6,3 +6,8 @@ color:white;
 .heading{
     background: #4aaaa5;
 }
+
+.error {
+    color: red;
+    margin-left: 5px;
+  }
